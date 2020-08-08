@@ -1,0 +1,22 @@
+[package]
+name = "passthru"
+version = "0.1.0"
+authors = ["james"]
+edition = "2018"
+
+[dependencies]
+cty = "0.2"
+redbpf-probes = "1.0.1"
+redbpf-macros = "1.0.1"
+
+[features]
+default = []
+probes = []
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "trace_http"
+path = "src/main.rs"
+required-features = ["probes"]
