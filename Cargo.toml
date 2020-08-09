@@ -4,17 +4,17 @@ version = "0.1.0"
 authors = ["james"]
 edition = "2018"
 
+[build-dependencies]
+cargo-bpf = { path = "../redbpf/cargo-bpf", default-features = false, features = ["build"] }
+
 [dependencies]
 cty = "0.2"
-redbpf-probes = "1.0.1"
-redbpf-macros = "1.0.1"
+redbpf-probes = { path = "../redbpf/redbpf-probes" }
+redbpf-macros = "1.0"
 
 [features]
 default = []
 probes = []
-
-[lib]
-path = "src/lib.rs"
 
 [[bin]]
 name = "trace_http"

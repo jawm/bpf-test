@@ -1,23 +1,22 @@
 #![no_std]
 #![no_main]
-use redbpf_macros::{program, xdp};
-use redbpf_probes::bindings::*;
-use redbpf_probes::xdp::{Transport, XdpAction, XdpContext};
-use redbpf_probes::helpers::gen::bpf_redirect;
+#![feature(bindings_after_at)]
+
+use redbpf_probes::xdp::prelude::*;
 
 program!(0xFFFFFFFE, "GPL");
 
 #[xdp]
-pub extern "C" fn trace_http(ctx: XdpContext) -> XdpAction {
-    if let Some(transport @ Transport::UDP(udp)) = ctx.transport() {
-        if transport.dest() != 19132 {
-            return XdpAction::Pass;
+pub extern "C" fn trace_http(ctx: XdpContext) -> XdpResult {
+    if let Ok(ref transport @ Transport::UDP(udp)) = ctx.transport() {
+        if transport.dest() != 7999 {
+            return XdpResult::Ok(XdpAction::Pass);
         }
         unsafe {
-            (*udp).dest = 29132
+            (*udp).dest = 7998_u16.to_be();
+            // bpf_redirect(1, 0); // ifindex = '1' for loopback interface. Need to figure out how to lookup...
         }
-        bpf_redirect(1, 0); // ifindex = '1' for loopback interface. Need to figure out how to lookup...
-        return XdpAction::Redirect
+        // return XdpResult::Ok(XdpAction::Redirect)
     }
-    XdpAction::Pass
+    XdpResult::Ok(XdpAction::Pass)
 }
